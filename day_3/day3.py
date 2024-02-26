@@ -1,7 +1,7 @@
 from functools import reduce
 
 size = 140
-point_map = [["&" for _ in range(size)] for _ in range(size)]
+point_map = [[None for _ in range(size)] for _ in range(size)]
 
 with open("input") as f:
     for i, line in enumerate([line.strip() for line in f.readlines()]):
@@ -59,8 +59,18 @@ def get_adjacent_blocks(start, end):
 
 valid_values = []
 for value, start, end in values:
-    if (len(list(filter(lambda x: point_map[x[1]][x[0]] is not None and not isinstance(point_map[x[1]][x[0]], int), get_adjacent_blocks(start, end))))) != 0:
-        valid_values.append(value)
-print(valid_values)
-print(sum(valid_values))
+    gears = list(filter(lambda x: point_map[x[1]][x[0]] is not None and not isinstance(point_map[x[1]][x[0]], int), get_adjacent_blocks(start, end)))
+    if (len(gears)) != 0:
+        # if a gear matches it only matches one other
+        assert len(gears) == 1
+        valid_values.append([value, gears[0]])
+
+# print(valid_values)
+gear_pairs = []
+for it in valid_values:
+    matching_gears = list(filter(lambda x: x[1] == it[1], valid_values))
+    if len(matching_gears) == 2 and matching_gears not in gear_pairs:
+        gear_pairs.append(matching_gears)
+print(sum([pair[0][0] * pair[1][0] for pair in gear_pairs]))
+# print(sum(valid_values))
 # print(map(sum, [value for _ in [list(filter(lambda x: x is not None, get_adjacent_blocks(start, end))) for value, start, end in values] if ]))
